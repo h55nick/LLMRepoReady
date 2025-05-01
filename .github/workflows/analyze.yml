@@ -14,20 +14,23 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for accurate analysis
       
-      - name: Analyze Repository Readiness
-        uses: h55nick/LLMRepoReady@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          repo: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          create-issue: 'true'
-          min-score: '70'
-        id: analyzer
+          node-version: '16'
       
-      - name: Check Results
-        run: |
-          echo "Overall Score: ${{ steps.analyzer.outputs.overall-score }}"
-          echo "Passed: ${{ steps.analyzer.outputs.passed }}"
-          echo "Report URL: ${{ steps.analyzer.outputs.report-url }}"
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run Repository Analysis
+        run: node src/index.js
+        env:
+          INPUT_REPO: ${{ github.repository }}
+          INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_CREATE_ISSUE: 'true'
+          INPUT_MIN_SCORE: '70'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: analyzer
       
       - name: Upload Report as Artifact
         uses: actions/upload-artifact@v3
