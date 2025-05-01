@@ -14,13 +14,36 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for accurate analysis
       
-      - name: Run Repository Readiness Analyzer
-        uses: ./
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          repo: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          create-issue: 'true'
-          min-score: '70'
+          node-version: '16'
+      
+      - name: Install dependencies
+        run: |
+          git clone https://github.com/h55nick/LLMRepoReady.git /tmp/LLMRepoReady
+          cd /tmp/LLMRepoReady
+          npm install
+      
+      - name: Run Repository Analysis
+        run: |
+          cd /tmp/LLMRepoReady
+          # Set environment variables for the action
+          export INPUT_REPO="${{ github.repository }}"
+          export INPUT_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          export INPUT_CREATE_ISSUE="true"
+          export INPUT_MIN_SCORE="70"
+          export INPUT_ANALYZE_TEST_COVERAGE="true"
+          export INPUT_ANALYZE_DOCUMENTATION="true"
+          export INPUT_ANALYZE_WORKFLOWS="true"
+          export INPUT_ANALYZE_COMPLEXITY="true"
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          
+          # Run the action
+          node src/index.js
+          
+          # Copy the report to the workspace
+          cp repo-readiness-report.md $GITHUB_WORKSPACE/
       
       - name: Upload Report as Artifact
         uses: actions/upload-artifact@v3
