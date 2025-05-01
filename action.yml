@@ -1,0 +1,59 @@
+name: 'Repository Readiness Analyzer'
+description: 'Analyzes a GitHub repository for code readiness and generates a comprehensive report'
+author: 'h55nick'
+branding:
+  icon: 'check-circle'
+  color: 'green'
+
+inputs:
+  repo:
+    description: 'The repository to analyze in the format owner/repo'
+    required: true
+  token:
+    description: 'GitHub token with access to the repository'
+    required: true
+    default: ${{ github.token }}
+  create-issue:
+    description: 'Whether to create an issue with the report'
+    required: false
+    default: 'false'
+  analyze-test-coverage:
+    description: 'Whether to analyze test coverage'
+    required: false
+    default: 'true'
+  analyze-documentation:
+    description: 'Whether to analyze documentation'
+    required: false
+    default: 'true'
+  analyze-workflows:
+    description: 'Whether to analyze GitHub workflows'
+    required: false
+    default: 'true'
+  analyze-complexity:
+    description: 'Whether to analyze code complexity and standards'
+    required: false
+    default: 'true'
+  min-score:
+    description: 'Minimum score to pass the analysis (0-100)'
+    required: false
+    default: '70'
+
+outputs:
+  report-url:
+    description: 'URL to the generated report (if created as an issue)'
+  overall-score:
+    description: 'Overall readiness score (0-100)'
+  test-coverage-score:
+    description: 'Test coverage score (0-100)'
+  documentation-score:
+    description: 'Documentation score (0-100)'
+  workflows-score:
+    description: 'Workflows score (0-100)'
+  complexity-score:
+    description: 'Code complexity score (0-100)'
+  passed:
+    description: 'Whether the repository passed the minimum score threshold'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'

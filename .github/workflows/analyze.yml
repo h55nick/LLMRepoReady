@@ -1,0 +1,36 @@
+name: Repository Readiness Analysis
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'  # Run weekly on Mondays
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch all history for accurate analysis
+      
+      - name: Analyze Repository Readiness
+        uses: h55nick/LLMRepoReady@v1
+        with:
+          repo: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          create-issue: 'true'
+          min-score: '70'
+        id: analyzer
+      
+      - name: Check Results
+        run: |
+          echo "Overall Score: ${{ steps.analyzer.outputs.overall-score }}"
+          echo "Passed: ${{ steps.analyzer.outputs.passed }}"
+          echo "Report URL: ${{ steps.analyzer.outputs.report-url }}"
+      
+      - name: Upload Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: repository-readiness-report
+          path: repo-readiness-report.md
