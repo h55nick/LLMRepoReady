@@ -23,13 +23,20 @@ jobs:
         run: npm install
       
       - name: Run Repository Analysis
-        run: node src/index.js
-        env:
-          INPUT_REPO: ${{ github.repository }}
-          INPUT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INPUT_CREATE_ISSUE: 'true'
-          INPUT_MIN_SCORE: '70'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Set environment variables for the action
+          export INPUT_REPO="${{ github.repository }}"
+          export INPUT_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          export INPUT_CREATE_ISSUE="true"
+          export INPUT_MIN_SCORE="70"
+          export INPUT_ANALYZE_TEST_COVERAGE="true"
+          export INPUT_ANALYZE_DOCUMENTATION="true"
+          export INPUT_ANALYZE_WORKFLOWS="true"
+          export INPUT_ANALYZE_COMPLEXITY="true"
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          
+          # Run the action
+          node src/index.js
         id: analyzer
       
       - name: Upload Report as Artifact
