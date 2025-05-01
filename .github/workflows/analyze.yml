@@ -46,7 +46,7 @@ jobs:
           cp repo-readiness-report.md $GITHUB_WORKSPACE/
       
       - name: Upload Report as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: repository-readiness-report
           path: repo-readiness-report.md
